@@ -3,7 +3,7 @@
 ## Delivery method
 Contract-first, risk-first, vertical slices using a modular monolith plus separate local controller. Each slice delivers UI + server behavior + persistence + authorization + tests + operator instructions.
 
-## Rules carried forward from CradleHub and the medical blog
+## Working rules
 1. INSPECT before change: read current charter, contracts, ADRs, code, schema, migration history and branch status.
 2. Diagnose the root cause and avoid implementing a second engine for existing functionality.
 3. Keep backend authority canonical; never let a frontend label, cached counter or mock claim real success.
@@ -16,7 +16,7 @@ Contract-first, risk-first, vertical slices using a modular monolith plus separa
 10. Stop on P0 security, money-integrity, or network-access blockers. Do not misrepresent a partial pass as release-ready.
 
 ## Branch and change discipline
-- Protected `main`; short-lived `feat/*`, `fix/*`, `docs/*`; review before merge.
+- `main` is the integration branch; use short-lived `chore/*`, `docs/*`, `feature/*`, `fix/*`, or `experiment/*` branches. See `docs/BRANCH_AND_RELEASE_POLICY.md` for approval boundaries and verified protection status.
 - One issue / one vertical slice / one PR when practical.
 - Schema migrations forward-only once shared; include compatible rollout and rollback/compensation plans.
 - Exact source commit and migration version recorded in deployment evidence.
