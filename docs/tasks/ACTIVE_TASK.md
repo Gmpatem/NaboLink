@@ -1,6 +1,6 @@
 # Active Task — M0-A governance corrective checkpoint
 
-Status: **Settings verified; corrective branch checkpoint pending** (2026-10-10)
+Status: **Corrections verified; awaiting independent review and owner-approved integration** (2026-10-10)
 Milestone: M0
 Repository: `Gmpatem/NaboLink`
 Branch: `chore/m0-governance-initialization`
