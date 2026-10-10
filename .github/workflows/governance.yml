@@ -1,0 +1,14 @@
+name: Governance Checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify canonical project context
+        run: python3 scripts/verify_project.py
