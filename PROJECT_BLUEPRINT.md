@@ -90,5 +90,5 @@ M6 Physical pilot: after authorizations and hardware; router commissioning, real
 - Starlink resale permission and Cameroon ART licensing category.
 - Deployment accounts and product branding details.
 
-## Next immediate task
-Draft M0 artifacts: roles-and-permissions matrix, 6 key workflow state machines, schema/contracts and acceptance scenarios; then implement an M1 skeleton using the same contracts and simulated connectors.
+## Planning sequence
+M0 contracts and acceptance scenarios remain to be drafted and approved. `docs/tasks/ACTIVE_TASK.md` records the current authorized task; this blueprint does not authorize M1 implementation.

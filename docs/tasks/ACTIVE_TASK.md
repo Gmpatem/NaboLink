@@ -1,18 +1,19 @@
-# Active Task — GOV-002 M0 governance initialization
+# Active Task — M0-A governance corrective checkpoint
 
-Status: **Local checkpoint ready; remote sync blocked by GitHub permission** (2026-10-10)
+Status: **Settings verified; corrective branch checkpoint pending** (2026-10-10)
+Milestone: M0
 Repository: `Gmpatem/NaboLink`
 Branch: `chore/m0-governance-initialization`
-Base: local `main` baseline `3723c7ab4efa751841a9d5aa6561958079427dd4`; remote was verified empty before initialization.
+Base: remote `main` at `3723c7ab4efa751841a9d5aa6561958079427dd4`; governance branch started M0-A at `74dc843570cf427a54525362da90c3052e0e9047`.
 
 ## Scope
-Align NaboLink identity and agent instructions; preserve existing planning history; establish Git baseline and branch policy; make status and handoff accurate; add lightweight governance validation and GitHub Actions; validate, commit, push and verify the authorized feature branch.
+Correct four review findings: wrong GitHub default branch, missing main protection, stale remote/CI context, and task-ID validation that rejects `M0-A`. Add focused regression tests, inspect related orientation text and action versions, then validate and push a checkpoint to the existing branch.
 
 ## Exclusions
-No ISP application scaffold or features, contract approval, cloud deployment, database mutation, live payment, physical network change, merge, or protected-main push.
+No ISP features, application scaffold, database schema, contract approval, merge, deployment, live payment, or physical router change. Do not alter global Git credentials or unrelated repositories.
 
 ## Acceptance
-Governance validator and CI configuration are checked locally; no obvious secrets or application code are staged; branch and remote state are reported accurately; the authorized branch is pushed and its remote HEAD verified if credentials and network allow. If push is blocked, record an unsynced checkpoint and the exact blocker.
+`main` is remotely verified as default; active main protection requires a PR, one approving review, the governance CI check, and blocks deletion and force pushes; branch context matches verified GitHub facts; validator and regression tests pass; the new branch commit is pushed and remote HEAD matches. Report final CI evidence in the completion report rather than embedding a self-referential commit SHA here.
 
-## Next task after GOV-002
-M0-01: refine the draft residential subscriber lifecycle contract and obtain owner approval before any production implementation.
+## Next task after M0-A
+M0-01: refine the draft residential subscriber lifecycle contract for owner approval. This task is not yet started.

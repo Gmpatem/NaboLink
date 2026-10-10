@@ -6,6 +6,8 @@ import re
 import subprocess
 import sys
 
+from governance_context import context_errors
+
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY = "Gmpatem/NaboLink"
 REQUIRED = (
@@ -71,15 +73,8 @@ handoff = read("docs/handoffs/LATEST.md")
 template = read("docs/templates/HANDOFF_TEMPLATE.md")
 contract = read("docs/contracts/01-subscriber-lifecycle.md")
 
+errors.extend(context_errors(state, active, handoff))
 milestone = re.search(r"(?m)^Stage:\s*\*\*(M\d+)\b", state)
-task = re.search(r"(?m)^# Active Task\s*[—-]\s*([A-Z]+-\d+)", active)
-branch = re.search(r"(?m)^Branch:\s*`([^`]+)`", active)
-if not milestone or not task or not branch:
-    errors.append("State or active task lacks a parseable milestone, task ID, or branch")
-else:
-    for name, data in (("active task", active), ("handoff", handoff), ("project state", state)):
-        if milestone.group(1) not in data or task.group(1) not in data or branch.group(1) not in data:
-            errors.append(f"{name} does not match active milestone/task/branch")
 if milestone and milestone.group(1) == "M0" and "Implementation: **Not started**" not in state:
     errors.append("M0 project state must state implementation is not started")
 if not re.search(r"(?m)^Status:\s*\*\*(?:DRAFT|APPROVED|SUPERSEDED)\b", contract):

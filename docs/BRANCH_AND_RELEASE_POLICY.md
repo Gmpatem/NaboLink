@@ -1,6 +1,6 @@
 # Branch and Release Policy
 
-- `main` is the reviewed integration baseline. Protection and required reviews are desired settings; do not claim they are configured without checking GitHub.
+- `main` is the reviewed integration baseline. On 2026-10-10, GitHub API readback verified it as the default protected branch: PR with one approving review, required `governance` check, admin enforcement, and deletion/force-push disabled. Recheck GitHub before relying on these settings in a later session.
 - Use short-lived `chore/*`, `docs/*`, `feature/*`, `fix/*`, or `experiment/*` branches for focused work. M0 initialization uses `chore/m0-governance-initialization`.
 - Commit and push meaningful checkpoints to the authorized task branch, then verify its remote SHA. A branch push is not a merge or deployment.
 - Merge, protected-main push, deployment, destructive migration, live payment operation, and physical router change require separate explicit owner authorization.
