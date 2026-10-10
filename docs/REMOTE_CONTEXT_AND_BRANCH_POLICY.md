@@ -1,5 +1,7 @@
 # Remote Context and Branch Checkpoint Policy
 
+Canonical repository: `https://github.com/Gmpatem/NaboLink.git`. `main` is the integration branch. The active task names the authorized working branch. `docs/CONTEXT_SYNC_PROTOCOL.md` is a compatibility pointer to this file.
+
 ## Stable vs live knowledge
 - ChatGPT Project sources: `chatgpt-project/PROJECT_VISION.md` and `PROJECT_PRINCIPLES.md`. Upload these once to the ChatGPT Project; they are deliberately stable.
 - GitHub is canonical for implementation. Prefer branch-specific `docs/PROJECT_STATE.md`, `docs/tasks/ACTIVE_TASK.md`, `docs/handoffs/LATEST.md`, relevant contracts and ADRs, code and tests.
@@ -28,4 +30,7 @@ Pushing to authorized feature branches does not require repetitive consent. Merg
 A feature branch's project state describes that branch only. Main's state describes integrated features only. Draft PRs may expose changes for review; opening one is not approval to merge. Do not invent commit IDs in a file before commit creation.
 
 ## Handoff fields
-Repository • feature branch • base branch • starting SHA • latest known local SHA • push result and remote SHA (reported after push) • milestone • changed files • approved scope • test commands/results • blockers • incomplete items • contract impact • next authorized step.
+Repository • feature branch • base branch • starting SHA • latest known local SHA (or pending before commit) • push result and remote SHA (reported after push, never guessed) • milestone • active task • changed files • approved scope • test commands/results • blockers • incomplete items • contract impact • next authorized step.
+
+## Ownership of live context
+`docs/PROJECT_STATE.md` owns milestone, implementation status and next action. `docs/tasks/ACTIVE_TASK.md` owns authorized scope and branch. `docs/DECISION_LOG.md`, ADRs and contracts own decision and approval status. `docs/handoffs/LATEST.md` records checkpoint evidence. Git and the remote ref own commit SHAs; report the final remote SHA after pushing rather than amending a committed handoff to include itself. Do not duplicate the full policy in another document.

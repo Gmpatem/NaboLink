@@ -1,4 +1,4 @@
-# PROJECT VISION — Community ISP Cameroon
+# PROJECT VISION — NaboLink Cameroon
 
 **Version:** 1.0 | **Nature:** Stable product intent, not a development status report | **Owner approval:** Proposed
 

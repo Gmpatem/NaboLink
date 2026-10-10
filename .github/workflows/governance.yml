@@ -2,12 +2,18 @@ name: Governance Checks
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - main
+      - 'chore/**'
+      - 'docs/**'
+      - 'feature/**'
+      - 'fix/**'
+      - 'experiment/**'
+permissions:
+  contents: read
 jobs:
   governance:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Verify canonical project context

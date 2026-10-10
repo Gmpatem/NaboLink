@@ -1,4 +1,4 @@
-# Community ISP Management Platform — Project Blueprint v0.1
+# NaboLink — Project Blueprint v0.1
 Date: 2026-10-10
 Status: Planning / hardware-free
 Market: Cameroon; initial 100 subscribers
@@ -88,7 +88,7 @@ M6 Physical pilot: after authorizations and hardware; router commissioning, real
 - Offline expiry behavior and how long cached authorization remains valid.
 - Ownership and location of on-site always-on controller and power backup.
 - Starlink resale permission and Cameroon ART licensing category.
-- Preferred business/product name and deployment accounts.
+- Deployment accounts and product branding details.
 
 ## Next immediate task
 Draft M0 artifacts: roles-and-permissions matrix, 6 key workflow state machines, schema/contracts and acceptance scenarios; then implement an M1 skeleton using the same contracts and simulated connectors.

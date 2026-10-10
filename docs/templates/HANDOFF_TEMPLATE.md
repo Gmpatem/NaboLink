@@ -1,11 +1,21 @@
 # Session Handoff
-Date / Agent / Task:
-Base SHA / Branch / End SHA:
+
+Date:
+Repository: `Gmpatem/NaboLink`
+Feature branch:
+Base branch:
+Starting SHA:
+Latest known local SHA: pending if this handoff is being committed
+Push result and remote SHA: pending until checked after push
+Milestone:
+Active task:
 Approved scope:
-Actual changes:
-Changes not made:
-Migrations / external effects:
-Commands and test results actually executed:
-Unverified claims / failures / blockers:
-Project state and ADR updates:
-Next exact permitted task:
+Changed files:
+Verification results: exact commands, pass/fail, untested checks
+Known failures:
+Incomplete items:
+Pending decisions:
+Contract impact:
+Next authorized step:
+
+Report the final verified remote SHA in the completion report. Do not add a new commit solely to put its own SHA in this file.

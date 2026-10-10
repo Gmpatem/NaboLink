@@ -1,27 +1,134 @@
 #!/usr/bin/env python3
-"""Lightweight stdlib governance checks. This does not prove runtime functionality."""
+"""Check objective M0 repository governance facts; not product readiness."""
+
 from pathlib import Path
-import re,sys
-ROOT=Path(__file__).resolve().parents[1]
-required=['chatgpt-project/PROJECT_VISION.md','chatgpt-project/PROJECT_PRINCIPLES.md','docs/REMOTE_CONTEXT_AND_BRANCH_POLICY.md','AGENTS.md','README.md','docs/PROJECT_STATE.md','docs/DECISION_LOG.md','docs/ARCHITECTURE.md','docs/ENGINEERING_PLAYBOOK.md','docs/CONTEXT_SYNC_PROTOCOL.md','docs/tasks/ACTIVE_TASK.md','docs/handoffs/LATEST.md','docs/contracts/01-subscriber-lifecycle.md','docs/templates/AGENT_TASK_TEMPLATE.md']
-errors=[]
-for p in required:
- f=ROOT/p
- if not f.exists() or not f.read_text(encoding='utf8').strip(): errors.append(f'Missing/empty: {p}')
-state=(ROOT/'docs/PROJECT_STATE.md').read_text()
-active=(ROOT/'docs/tasks/ACTIVE_TASK.md').read_text()
-contract=(ROOT/'docs/contracts/01-subscriber-lifecycle.md').read_text()
-if 'M0' not in state: errors.append('Project state must declare milestone')
-if 'Status:' not in active: errors.append('Active task missing status')
-if not re.search(r'Status:\s*\*\*(DRAFT|APPROVED|SUPERSEDED)',contract): errors.append('Contract missing explicit status')
-if 'APPROVED' not in contract: errors.append('Contract must specify approval status')
-if any((ROOT/p).exists() for p in ['.env','.env.local']): errors.append('Potential local secrets in repository root')
-for f in (ROOT/'docs/adr').glob('*.md'):
- if f.name=='README.md':continue
- if not re.search(r'(?im)^\*\*?Status\*\*?:|^Status:',f.read_text()): errors.append(f'ADR missing status: {f.name}')
+import re
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY = "Gmpatem/NaboLink"
+REQUIRED = (
+    "AGENTS.md",
+    "README.md",
+    "chatgpt-project/PROJECT_VISION.md",
+    "chatgpt-project/PROJECT_PRINCIPLES.md",
+    "docs/REMOTE_CONTEXT_AND_BRANCH_POLICY.md",
+    "docs/BRANCH_AND_RELEASE_POLICY.md",
+    "docs/PROJECT_STATE.md",
+    "docs/tasks/ACTIVE_TASK.md",
+    "docs/DECISION_LOG.md",
+    "docs/handoffs/LATEST.md",
+    "docs/templates/HANDOFF_TEMPLATE.md",
+    "docs/contracts/01-subscriber-lifecycle.md",
+    ".github/workflows/governance.yml",
+)
+IDENTITY_FILES = (
+    "AGENTS.md",
+    "README.md",
+    "chatgpt-project/PROJECT_INSTRUCTIONS_TO_PASTE.md",
+    "docs/REMOTE_CONTEXT_AND_BRANCH_POLICY.md",
+    "docs/PROJECT_STATE.md",
+    "docs/handoffs/LATEST.md",
+)
+HANDOFF_FIELDS = (
+    "Repository", "Feature branch", "Base branch", "Starting SHA",
+    "Latest known local SHA", "Push result and remote SHA", "Milestone",
+    "Active task", "Approved scope", "Changed files", "Verification results",
+    "Known failures", "Incomplete items", "Pending decisions",
+    "Contract impact", "Next authorized step",
+)
+errors: list[str] = []
+
+
+def read(path: str) -> str:
+    file = ROOT / path
+    if not file.is_file():
+        errors.append(f"Missing: {path}")
+        return ""
+    data = file.read_text(encoding="utf-8")
+    if not data.strip():
+        errors.append(f"Empty: {path}")
+    return data
+
+
+for path in REQUIRED:
+    read(path)
+
+for path in IDENTITY_FILES:
+    data = read(path)
+    if REPOSITORY not in data:
+        errors.append(f"Canonical repository missing: {path}")
+    if re.search(r"Community ISP", data, re.IGNORECASE):
+        errors.append(f"Obsolete project identity: {path}")
+    for match in re.finditer(r"github\.com/([\w.-]+/[\w.-]+)", data):
+        if match.group(1).removesuffix(".git") != REPOSITORY:
+            errors.append(f"Unexpected GitHub repository in {path}")
+
+state = read("docs/PROJECT_STATE.md")
+active = read("docs/tasks/ACTIVE_TASK.md")
+handoff = read("docs/handoffs/LATEST.md")
+template = read("docs/templates/HANDOFF_TEMPLATE.md")
+contract = read("docs/contracts/01-subscriber-lifecycle.md")
+
+milestone = re.search(r"(?m)^Stage:\s*\*\*(M\d+)\b", state)
+task = re.search(r"(?m)^# Active Task\s*[—-]\s*([A-Z]+-\d+)", active)
+branch = re.search(r"(?m)^Branch:\s*`([^`]+)`", active)
+if not milestone or not task or not branch:
+    errors.append("State or active task lacks a parseable milestone, task ID, or branch")
+else:
+    for name, data in (("active task", active), ("handoff", handoff), ("project state", state)):
+        if milestone.group(1) not in data or task.group(1) not in data or branch.group(1) not in data:
+            errors.append(f"{name} does not match active milestone/task/branch")
+if milestone and milestone.group(1) == "M0" and "Implementation: **Not started**" not in state:
+    errors.append("M0 project state must state implementation is not started")
+if not re.search(r"(?m)^Status:\s*\*\*(?:DRAFT|APPROVED|SUPERSEDED)\b", contract):
+    errors.append("Subscriber contract lacks explicit approval status")
+for path, data in (("latest handoff", handoff), ("handoff template", template)):
+    for field in HANDOFF_FIELDS:
+        if not re.search(rf"(?m)^{re.escape(field)}:", data):
+            errors.append(f"{path} missing field: {field}")
+
+for file in (ROOT / "docs/adr").glob("*.md"):
+    if file.name != "README.md" and not re.search(
+        r"(?m)^Status:\s*(?:Proposed|Accepted|Superseded)\b",
+        file.read_text(encoding="utf-8"),
+    ):
+        errors.append(f"ADR missing status: {file.relative_to(ROOT)}")
+
+for path in ("apps", "packages", "supabase/migrations"):
+    if milestone and milestone.group(1) == "M0" and (ROOT / path).exists():
+        errors.append(f"Application path exists during M0: {path}")
+
+tracked = subprocess.run(
+    ["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=False,
+)
+if tracked.returncode:
+    errors.append("Could not inspect Git index for committed secrets")
+else:
+    secret_patterns = (
+        re.compile(r"gh[pousr]_[A-Za-z0-9_]{20,}"),
+        re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
+        re.compile(r"sk-[A-Za-z0-9]{24,}"),
+        re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
+    )
+    for raw in tracked.stdout.split(b"\0"):
+        if not raw:
+            continue
+        path = Path(raw.decode("utf-8"))
+        if path.name == ".env" or path.name.startswith(".env.") and path.name != ".env.example":
+            errors.append(f"Tracked environment file: {path}")
+        file = ROOT / path
+        if not file.is_file() or path.as_posix() == "scripts/verify_project.py":
+            continue
+        data = file.read_text(encoding="utf-8", errors="ignore")
+        if any(pattern.search(data) for pattern in secret_patterns):
+            errors.append(f"Possible credential in tracked file: {path}")
+
 if errors:
- print('FAIL governance checks:')
- for e in errors:print(' -',e)
- sys.exit(1)
-print(f'PASS governance checks ({len(required)} mandatory files, declared statuses, no root .env)')
-print('Note: no application tests, deployment, legal or network certifications were performed.')
+    print("FAIL governance checks:")
+    for error in sorted(set(errors)):
+        print(f" - {error}")
+    sys.exit(1)
+print(f"PASS governance checks ({len(REQUIRED)} required files, identity, status, handoff, obvious-secret scan)")
+print("No application, legal, deployment, payment, or physical network validation was performed.")
